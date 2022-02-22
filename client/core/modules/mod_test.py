@@ -8,5 +8,3 @@ def print_now():
 
 def get_time_now():
     return datetime.now()
-
-#end

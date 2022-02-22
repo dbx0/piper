@@ -3,12 +3,13 @@ import numpy as np
 from PIL import Image
 import hashlib
 import os
+import base64
 
 def get_module_bytes(module_path):
-    file_content = open(module_path, 'r').read()
-    print(file_content)
-
-    b_content =  ''.join(["{:08b}".format(ord(x)) for x in file_content ])
+    file_content = open(module_path, 'r').read().encode('ascii')
+    b64_content = base64.b64encode(file_content)
+    b64_content = b64_content.decode('ascii')   + "#end"
+    b_content =  ''.join([ "{:08b}".format(ord(x)) for x in b64_content ])
     return [int(x) for x in b_content]
 
 def get_image_data(image_path):
