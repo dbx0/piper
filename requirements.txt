@@ -2,3 +2,5 @@ colorama
 pyyaml
 plyer
 dbus-python
+numpy
+pillow

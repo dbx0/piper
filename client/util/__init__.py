@@ -1,0 +1,1 @@
+from .lsb_substitution import module_to_image
