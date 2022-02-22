@@ -1,1 +1,4 @@
 colorama
+pyyaml
+plyer
+dbus-python
