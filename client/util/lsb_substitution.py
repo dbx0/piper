@@ -34,8 +34,8 @@ def module_to_image(module_name):
 
     module_path = f"{base_path}/core/modules/{module_name}.py"
     image_path = f"{base_path}/assets/rat.png"
-    o_image_name = f"rat_{module_name}"
-    o_image_name = hashlib.md5(o_image_name.encode('utf-8')).hexdigest()
+    o_image_name = f"{module_name}"
+    o_image_name = "rat_" + hashlib.md5(o_image_name.encode('utf-8')).hexdigest()
     o_image_path = f"{base_path}/hamelin/{o_image_name}.png"
 
     b_module = get_module_bytes(module_path)

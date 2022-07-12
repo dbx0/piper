@@ -7,7 +7,8 @@ import sys
 import base64
 
 def get_image_path(module):
-    filename = hashlib.md5(f"rat_{module}".encode('utf-8')).hexdigest()
+    filename = "rat_" 
+    filename += hashlib.md5(f"{module}".encode('utf-8')).hexdigest()
     filename += ".png"
 
     base_path = "C:" if "win" in sys.platform else "/"
