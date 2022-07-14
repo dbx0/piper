@@ -67,7 +67,7 @@ def listen_master(host, port):
     while send_heartbeat(s):
         try:
             s.settimeout(5)
-            order = s.recv(10000)
+            order = s.recv(40960000)
             if order:
                 t = Thread(target=process_order, args=(order.decode(),))
                 t.start()
